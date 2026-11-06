@@ -1,0 +1,23 @@
+code,name,short,group_code,seed,status,color1,color2,wc_titles,rating
+IND,India,IND,A,A1,qualified,#1e6fd9,#ffffff,2,92
+AUS,Australia,AUS,A,A2,qualified,#f2c200,#0b6b3a,6,90
+PAK,Pakistan,PAK,A,A3,qualified,#0f8a4b,#ffffff,1,80
+AFG,Afghanistan,AFG,A,,qualified,#2b6cb0,#d62828,0,72
+ZIM,Zimbabwe,ZIM,A,,qualified,#d62828,#f2c200,0,58
+QA,Qualifier A,QA,A,,placeholder,#7b8a80,#c8f169,0,52
+NZL,New Zealand,NZL,B,B1,qualified,#1b1b1b,#ffffff,0,82
+RSA,South Africa,RSA,B,B2,qualified,#1d8a4e,#f2c200,0,86
+SRL,Sri Lanka,SRL,B,B3,qualified,#1f3a93,#f2a900,1,74
+ENG,England,ENG,B,,qualified,#c8102e,#1d2d5c,1,84
+BAN,Bangladesh,BAN,B,,qualified,#0a7a4a,#d62828,0,68
+QB,Qualifier B,QB,B,,placeholder,#7b8a80,#c8f169,0,52
+QS1,Super Series 1,QS1,,,placeholder,#7b8a80,#c8f169,0,50
+QS2,Super Series 2,QS2,,,placeholder,#7b8a80,#c8f169,0,50
+QS3,Super Series 3,QS3,,,placeholder,#7b8a80,#c8f169,0,50
+WIN,West Indies,WIN,,,contender,#7b0f2e,#f2c200,2,65
+IRE,Ireland,IRE,,,contender,#169b62,#ffffff,0,55
+NED,Netherlands,NED,,,contender,#f26a1b,#1d2d5c,0,55
+SCO,Scotland,SCO,,,contender,#1f3a93,#ffffff,0,52
+USA,United States,USA,,,contender,#1d2d5c,#c8102e,0,48
+OMA,Oman,OMA,,,contender,#c8102e,#0a7a4a,0,46
+NAM,Namibia,NAM,,,contender,#1f5fbf,#d62828,0,45

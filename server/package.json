@@ -1,0 +1,22 @@
+{
+  "name": "matchday-atlas-crease-server",
+  "version": "1.0.0",
+  "description": "Matchday Atlas Crease - Cricket World Cup 2027 predictor API (Express + PostgreSQL)",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "seed": "node src/seed.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csv-parse": "^5.5.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "pg": "^8.12.0"
+  }
+}

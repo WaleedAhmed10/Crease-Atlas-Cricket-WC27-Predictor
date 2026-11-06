@@ -1,0 +1,12 @@
+{
+  "name": "matchday-atlas-crease",
+  "private": true,
+  "description": "Matchday Atlas Crease - ICC Men's Cricket World Cup 2027 predictor (PostgreSQL, Express, React, Node)",
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "seed": "npm run seed --prefix server",
+    "test": "npm test --prefix client && npm test --prefix server"
+  }
+}

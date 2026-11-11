@@ -120,7 +120,7 @@ export default function App() {
   if (loadError) return (
     <div className="boot"><div className="panel boot-card">
       <Wordmark /><h2>Can’t reach the API</h2><p className="muted">{loadError}</p>
-      <p className="muted small">Running locally? Start PostgreSQL and the server first (see README), then retry.</p>
+      <p className="muted small">Running locally? Start PostgreSQL and the server first. On Vercel, check the DATABASE_URL setting (see README). Then retry.</p>
       <button className="btn btn-lime" onClick={load}>Try again</button>
     </div></div>
   );

@@ -38,10 +38,22 @@ Tests: `npm test --prefix client` (tournament engine) and
 * During the tournament add rows to `data/results.csv`, then run `npm run seed` (or `POST /api/admin/reseed` with the `X-Admin-Key` header if you set `ADMIN_KEY`). Tables, brackets, points and the leaderboard update.
 * Atlas ratings in `teams.csv` are starting estimates for the simulator, not official rankings. Adjust them freely.
 
-## Deploying
+## Deploying on Vercel (web app + API in one project)
 
-* **API** (Render, Railway, Fly…): set `DATABASE_URL` (+ `DATABASE_SSL=true` for most hosted Postgres), `CORS_ORIGIN=https://your-frontend`, and run `npm start` in `server/`. One proxy hop is trusted in production so the rate limiter sees real client IPs (`TRUST_PROXY` to change).
-* **Web app** (Vercel, Netlify…): build `client/` with `VITE_API_URL=https://your-api.example.com/api`.
+The repo is set up so **one Vercel project serves both**: `vercel.json` builds the React app and runs the Express API as a serverless function at `/api/*` (`api/index.js`). Same domain, so no CORS and no `VITE_API_URL`.
+
+1. **Create a PostgreSQL database** (Neon, Supabase or Vercel's Postgres marketplace) and copy its **pooled** connection string.
+2. **Vercel project settings → General → Root Directory: leave it as the repository root** (not `client`). Framework preset: *Other* (the commands come from `vercel.json`).
+3. **Environment variables** (Settings → Environment Variables):
+   * `DATABASE_URL` = your connection string
+   * `DATABASE_SSL` = `true` (needed by most hosted Postgres)
+   * `ADMIN_KEY` = a long random string (optional; lets you reload CSVs with `POST /api/admin/reseed`)
+4. **Redeploy.** Open `https://your-app.vercel.app/api/health`: you should see `{"ok":true,...}`. The first request creates the tables and loads the CSV data.
+
+Troubleshooting: **404 on `/api/...`** means the project was deployed from `client/` or without the `api/` folder, so fix the Root Directory. **503 "database is not reachable"**: check `DATABASE_URL` / `DATABASE_SSL`. After editing a CSV in `/data`, redeploy: the changed files are detected and reloaded automatically.
+Rate limits are kept in memory per function instance, which is fine at this scale.
+
+Other hosts: run `server/` anywhere that runs Node (Render, Railway, Fly…) with `DATABASE_URL`, `CORS_ORIGIN=https://your-frontend`, and build `client/` with `VITE_API_URL=https://your-api.example.com/api`.
 
 ## Security notes
 

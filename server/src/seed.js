@@ -1,10 +1,11 @@
 // Loads the CSV datasets in /data into PostgreSQL. Idempotent: run it again any time you edit a CSV
 // (users, sessions and predictions are never touched).
+import crypto from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'csv-parse/sync';
 import { config } from './config.js';
-import { pool, migrate } from './db.js';
+import { pool, schemaSql } from './db.js';
 
 const read = async (name) =>
   parse(await readFile(`${config.dataDir}${name}`, 'utf8'), { columns: true, skip_empty_lines: true, trim: true });
@@ -18,8 +19,35 @@ export function marginBand(type, value) {
   return null;
 }
 
-export async function seed() {
-  await migrate();
+const FILES = ['teams.csv', 'venues.csv', 'fixtures.csv', 'results.csv', 'slot_assignments.csv'];
+const LOCK_ID = 727001; // pg advisory lock so several server instances never seed at the same moment
+
+/**
+ * Creates the tables and loads the CSV datasets.
+ * Unless `force` is set it does nothing when the CSV files are unchanged since the last load,
+ * so it is cheap to call on every (serverless) cold start.
+ */
+export async function seed({ force = false } = {}) {
+  const lock = await pool.connect();
+  try {
+    await lock.query('SELECT pg_advisory_lock($1)', [LOCK_ID]);
+    await lock.query(await schemaSql());
+    const raw = await Promise.all(FILES.map((f) => readFile(`${config.dataDir}${f}`, 'utf8')));
+    const hash = crypto.createHash('sha256').update(raw.join('\u0000')).digest('hex');
+    if (!force) {
+      const { rows } = await lock.query("SELECT value FROM meta WHERE key='data_hash'");
+      if (rows[0]?.value === hash) return { skipped: true, reason: 'datasets unchanged' };
+    }
+    const summary = await load(lock);
+    await lock.query("INSERT INTO meta (key,value) VALUES ('data_hash',$1) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value", [hash]);
+    return summary;
+  } finally {
+    await lock.query('SELECT pg_advisory_unlock($1)', [LOCK_ID]).catch(() => {});
+    lock.release();
+  }
+}
+
+async function load(client) { // runs on the connection that holds the lock
   const [teams, venues, matches, results, slots] = await Promise.all([
     read('teams.csv'), read('venues.csv'), read('fixtures.csv'), read('results.csv'), read('slot_assignments.csv'),
   ]);
@@ -40,7 +68,6 @@ export async function seed() {
     if (!venueIds.has(m.venue_id)) throw new Error(`fixtures.csv: match ${m.match_no} has unknown venue ${m.venue_id}`);
   }
 
-  const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
@@ -102,14 +129,12 @@ export async function seed() {
   } catch (err) {
     await client.query('ROLLBACK');
     throw err;
-  } finally {
-    client.release();
   }
 }
 
 // `npm run seed`
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  seed()
+  seed({ force: true })
     .then((s) => { console.log('Seeded:', s); return pool.end(); })
     .catch((e) => { console.error('Seed failed:', e.message); process.exit(1); });
 }

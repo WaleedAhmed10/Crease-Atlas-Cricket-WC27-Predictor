@@ -73,3 +73,8 @@ CREATE TABLE IF NOT EXISTS predictions (
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (user_id, match_no)
 );
+
+CREATE TABLE IF NOT EXISTS meta (
+  key   TEXT PRIMARY KEY,
+  value TEXT NOT NULL                                  -- e.g. data_hash: fingerprint of the CSV files last loaded
+);

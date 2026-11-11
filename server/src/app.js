@@ -160,7 +160,7 @@ export function createApp() {
     const ok = config.adminKey && key.length === config.adminKey.length &&
       crypto.timingSafeEqual(Buffer.from(key), Buffer.from(config.adminKey));
     if (!ok) throw new HttpError(403, 'Forbidden');
-    res.json({ ok: true, ...(await seed()) });
+    res.json({ ok: true, ...(await seed({ force: true })) });
   }));
 
   app.use('/api', (_req, _res, next) => next(new HttpError(404, 'Not found')));

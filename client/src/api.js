@@ -24,7 +24,10 @@ async function call(path, { method = 'GET', body, timeout = 30000 } = {}) {
     try { data = text ? JSON.parse(text) : {}; } catch { /* not JSON, e.g. an HTML page from a wrong API address */ }
     if (!res.ok) {
       if (res.status === 401 && !path.startsWith('/auth/signin') && !path.startsWith('/auth/signup')) setToken(null);
-      throw new ApiError(data.error || `Request failed (${res.status})`, res.status);
+      const hint = res.status === 404 || res.status === 405
+        ? `The API was not found (${res.status}). If this is a Vercel deployment, the project needs the API function: set the Root Directory to the repository root and add DATABASE_URL (see README).`
+        : `Request failed (${res.status})`;
+      throw new ApiError(data.error || hint, res.status);
     }
     if (text && !Object.keys(data).length && !text.trim().startsWith('{')) {
       throw new ApiError('The API address looks wrong: got a web page instead of data. Set VITE_API_URL when building the client.', 0);

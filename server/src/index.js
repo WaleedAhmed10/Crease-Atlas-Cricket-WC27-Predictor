@@ -5,7 +5,7 @@ import { createApp } from './app.js';
 
 try {
   const s = await seed(); // creates tables and loads the CSV datasets (safe to repeat)
-  console.log(`Datasets loaded: ${s.matches} matches, ${s.teams} teams, ${s.results} results`);
+  console.log(s.skipped ? 'Datasets already up to date' : `Datasets loaded: ${s.matches} matches, ${s.teams} teams, ${s.results} results`);
 } catch (e) {
   console.error('Could not set up the database:', e.message);
   console.error('Check DATABASE_URL and that PostgreSQL is running.');
